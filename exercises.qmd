@@ -1,0 +1,42 @@
+---
+title: "Exercises"
+subtitle: "Run them in your browser on Google Colab"
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+---
+
+## How to start
+
+1. Click on a **Open in Colab** badge below (a free Google account is needed).
+2. In Colab: *Runtime → Run all*. The first cell installs Cheetah (~30 s).
+3. Fill in the cells marked **✏️ Exercise** (look for `...` and `# TODO`).
+4. Stuck? Open the solution notebook.
+
+::: {.callout-tip}
+## Save your work
+Colab notebooks opened from GitHub are temporary. Use *File → Save a copy in Drive* to keep your answers.
+:::
+
+## The notebooks
+
+| # | Topic | You will learn | Exercise | Solution |
+|:-:|:--|:--|:-:|:-:|
+| 0 | First beamline with Cheetah | build and track a beamline; tune by hand; gradient-based tuning through a differentiable simulator; local minima | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/00_cheetah_basics.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/solutions/00_cheetah_basics.ipynb) |
+| 1 | Neural-network surrogate | generate a dataset; linear baseline vs. MLP; test set; learning curve; extrapolation | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/01_surrogate_model.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/solutions/01_surrogate_model.ipynb) |
+| 2 | Bayesian optimisation | Gaussian processes; expected improvement; code the BO loop; compare with random search; noise | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/02_bayesian_optimisation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/solutions/02_bayesian_optimisation.ipynb) |
+| 3 | Faulty BPM detection | unsupervised learning; PCA reconstruction error; Isolation Forest; precision vs. recall | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/03_anomaly_detection.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/solutions/03_anomaly_detection.ipynb) |
+
+Suggested order: 0 → 1 → 2 → 3. Each notebook takes 30–45 min; notebook 0 is needed for
+the others only as an introduction to Cheetah (each notebook is self-contained).
+
+## Run locally instead
+
+```bash
+git clone https://github.com/hayg25/Lectures_ML4Accelerators.git
+cd Lectures_ML4Accelerators
+pip install -r requirements.txt
+jupyter lab notebooks/
+```

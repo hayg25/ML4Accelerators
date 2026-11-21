@@ -1,0 +1,46 @@
+---
+title: "Machine Learning for Accelerator Physics"
+subtitle: "A one-hour introduction for beginners, with hands-on exercises"
+author: "Hayg Guler — IJCLab (CNRS/IN2P3, Université Paris-Saclay)"
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+---
+
+::: {.lead-box}
+How are machine-learning methods used to **tune, model, monitor and control** particle
+accelerators? This course gives a map of the main methods — what they are, what they need,
+when to use them — and lets you try each of them on a simulated beamline, directly in your
+browser.
+:::
+
+[▶ Open the slides](slides/ml4acc.qmd){.btn-slides}
+[Exercises on Colab](exercises.qmd){.btn-slides .secondary}
+
+## Audience and prerequisites
+
+Students and young researchers in accelerator physics with **no prior machine-learning
+background**. You need basic Python and the basics of transverse beam optics (drifts,
+quadrupoles, beam size). Nothing to install: the exercises run on Google Colab.
+
+## Course outline (60 min)
+
+| Time | Part | Content |
+|:--|:--|:--|
+| 0–8 min | Why ML for accelerators? | many knobs, noise, drifts, costly simulations; the four families of tasks |
+| 8–25 min | Machine learning from scratch | supervised / unsupervised / reinforcement learning; data, model, loss; gradient descent; neural networks step by step (neuron, activation, layers, backpropagation); overfitting and test sets |
+| 25–52 min | A tour of the methods | surrogate models & virtual diagnostics · Bayesian optimisation · anomaly detection & fault classification · reinforcement learning · differentiable simulations |
+| 52–58 min | Good practice | evaluation, uncertainty, safety; take-home messages |
+
+## Hands-on exercises
+
+Four notebooks, all built on the same three-quadrupole beamline simulated with
+[Cheetah](https://github.com/desy-ml/cheetah), a fast and differentiable beam-dynamics code
+written in PyTorch. See the [exercises page](exercises.qmd).
+
+## Reuse
+
+Slides content: CC BY 4.0 · Code: MIT. Source on
+[GitHub](https://github.com/hayg25/Lectures_ML4Accelerators).

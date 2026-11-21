@@ -1,0 +1,9 @@
+# Notebooks (Colab installs only cheetah-accelerator; the rest is preinstalled there)
+cheetah-accelerator>=0.8,<0.9
+torch
+numpy
+scipy
+scikit-learn
+matplotlib
+ipywidgets
+jupyterlab

@@ -1,0 +1,11 @@
+.callout-tip .callout-title-container { font-weight: 700; }
+.lead-box {
+  background: #f3f6fb; border-left: 6px solid #2a6fdb; border-radius: 6px;
+  padding: 0.8em 1.1em; margin: 1em 0;
+}
+.btn-slides {
+  display: inline-block; background: #f08a24; color: white !important; font-weight: 700;
+  padding: 0.5em 1.1em; border-radius: 6px; text-decoration: none; margin-right: 0.5em;
+}
+.btn-slides.secondary { background: #14213d; }
+table img { vertical-align: middle; }

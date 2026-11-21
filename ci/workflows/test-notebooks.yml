@@ -1,0 +1,34 @@
+name: Execute solution notebooks
+
+on:
+  push:
+    branches: [main]
+    paths: ["notebooks/**", "requirements.txt", ".github/workflows/test-notebooks.yml"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies (CPU-only torch)
+        run: |
+          pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt nbconvert ipykernel
+      - name: Check that notebooks are in sync with their sources
+        run: |
+          python scripts/build_notebooks.py
+          git diff --exit-code notebooks/
+      - name: Execute every solution notebook
+        run: |
+          for nb in notebooks/solutions/*.ipynb; do
+            echo "::group::$nb"
+            jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=900 \
+              --output-dir /tmp/executed "$nb"
+            echo "::endgroup::"
+          done
