@@ -12,8 +12,8 @@ project:
 
 website:
   title: "ML for Accelerator Physics"
-  site-url: https://hayg25.github.io/Lectures_ML4Accelerators/
-  repo-url: https://github.com/hayg25/Lectures_ML4Accelerators
+  site-url: https://hayg25.github.io/ML4Accelerators/
+  repo-url: https://github.com/hayg25/ML4Accelerators
   repo-actions: [source, issue]
   page-navigation: true
   navbar:
@@ -26,7 +26,7 @@ website:
         text: Exercises
     right:
       - icon: github
-        href: https://github.com/hayg25/Lectures_ML4Accelerators
+        href: https://github.com/hayg25/ML4Accelerators
         aria-label: GitHub repository
   page-footer:
     left: "© Hayg Guler — IJCLab (CNRS/IN2P3). Content CC BY 4.0, code MIT."

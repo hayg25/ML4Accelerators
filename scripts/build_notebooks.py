@@ -25,7 +25,7 @@ import json
 import re
 from pathlib import Path
 
-REPO = "hayg25/Lectures_ML4Accelerators"
+REPO = "hayg25/ML4Accelerators"
 BRANCH = "main"
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "notebooks" / "src"

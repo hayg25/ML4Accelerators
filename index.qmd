@@ -43,4 +43,4 @@ written in PyTorch. See the [exercises page](exercises.qmd).
 ## Reuse
 
 Slides content: CC BY 4.0 · Code: MIT. Source on
-[GitHub](https://github.com/hayg25/Lectures_ML4Accelerators).
+[GitHub](https://github.com/hayg25/ML4Accelerators).

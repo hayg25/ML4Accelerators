@@ -18,7 +18,7 @@ format:
     transition-speed: fast
     progress: true
     preview-links: auto
-    footer: "ML for Accelerator Physics · H. Guler · [github.com/hayg25/Lectures_ML4Accelerators](https://github.com/hayg25/Lectures_ML4Accelerators)"
+    footer: "ML for Accelerator Physics · H. Guler · [github.com/hayg25/ML4Accelerators](https://github.com/hayg25/ML4Accelerators)"
     chalkboard: true
     menu:
       side: left
@@ -1026,14 +1026,14 @@ All notebooks run in the browser on Google Colab (free Google account) — click
 
 | # | Notebook | Method | |
 |:-:|:--|:--|:--:|
-| 0 | First beamline with Cheetah | tracking, manual & gradient-based tuning | [![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/00_cheetah_basics.ipynb) |
-| 1 | Neural-network surrogate | supervised regression | [![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/01_surrogate_model.ipynb) |
-| 2 | Bayesian optimisation | GP + acquisition function | [![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/02_bayesian_optimisation.ipynb) |
-| 3 | Faulty BPM detection | unsupervised anomaly detection | [![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/03_anomaly_detection.ipynb) |
+| 0 | First beamline with Cheetah | tracking, manual & gradient-based tuning | [![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/00_cheetah_basics.ipynb) |
+| 1 | Neural-network surrogate | supervised regression | [![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/01_surrogate_model.ipynb) |
+| 2 | Bayesian optimisation | GP + acquisition function | [![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/02_bayesian_optimisation.ipynb) |
+| 3 | Faulty BPM detection | unsupervised anomaly detection | [![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/03_anomaly_detection.ipynb) |
 
 ::: {.box-orange .small}
 Cells marked ✏️ are for you. Solutions: `notebooks/solutions/` in the
-[GitHub repository](https://github.com/hayg25/Lectures_ML4Accelerators).
+[GitHub repository](https://github.com/hayg25/ML4Accelerators).
 :::
 
 ## To go further {.smaller}
@@ -1074,8 +1074,8 @@ Cells marked ✏️ are for you. Solutions: `notebooks/solutions/` in the
 <br>
 
 ::: {style="color: white; font-size: 0.8em;"}
-Slides & exercises: [hayg25.github.io/Lectures_ML4Accelerators](https://hayg25.github.io/Lectures_ML4Accelerators/){style="color:#f08a24"}
-<br>Source: [github.com/hayg25/Lectures_ML4Accelerators](https://github.com/hayg25/Lectures_ML4Accelerators){style="color:#f08a24"}
+Slides & exercises: [hayg25.github.io/ML4Accelerators](https://hayg25.github.io/ML4Accelerators/){style="color:#f08a24"}
+<br>Source: [github.com/hayg25/ML4Accelerators](https://github.com/hayg25/ML4Accelerators){style="color:#f08a24"}
 :::
 
 ## Backup — glossary

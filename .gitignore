@@ -1,0 +1,15 @@
+# Quarto
+/_site/
+/.quarto/
+*_files/
+# Python / Jupyter
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+# OS
+.DS_Store
+# scratch
+_to_delete/
+
+**/*.quarto_ipynb

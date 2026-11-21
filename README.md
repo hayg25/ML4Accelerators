@@ -5,11 +5,11 @@ Hayg Guler — IJCLab (CNRS/IN2P3, Université Paris-Saclay)
 
 | | |
 |---|---|
-| **Website & slides** | https://hayg25.github.io/Lectures_ML4Accelerators/ |
-| **Exercise 0** — First beamline with Cheetah (tracking, gradient-based tuning) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/00_cheetah_basics.ipynb) |
-| **Exercise 1** — Neural-network surrogate model | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/01_surrogate_model.ipynb) |
-| **Exercise 2** — Bayesian optimisation | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/02_bayesian_optimisation.ipynb) |
-| **Exercise 3** — Faulty BPM detection (unsupervised) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/Lectures_ML4Accelerators/blob/main/notebooks/03_anomaly_detection.ipynb) |
+| **Website & slides** | https://hayg25.github.io/ML4Accelerators/ |
+| **Exercise 0** — First beamline with Cheetah (tracking, gradient-based tuning) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/00_cheetah_basics.ipynb) |
+| **Exercise 1** — Neural-network surrogate model | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/01_surrogate_model.ipynb) |
+| **Exercise 2** — Bayesian optimisation | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/02_bayesian_optimisation.ipynb) |
+| **Exercise 3** — Faulty BPM detection (unsupervised) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/03_anomaly_detection.ipynb) |
 
 Solutions: [`notebooks/solutions/`](notebooks/solutions/).
 
@@ -39,7 +39,7 @@ All exercises use the same three-quadrupole electron beamline, simulated with
 │   ├── build_notebooks.py        ← src/*.py → exercise + solution notebooks
 │   ├── make_figures.py           ← regenerate the slide figures (numpy/sklearn only)
 │   └── optics.py                 ← small numpy linear-optics model used for the figures
-└── ci/workflows/                 ← GitHub Actions, to move into .github/workflows/ (see below)
+└── .github/workflows/
     ├── publish.yml               ← render with Quarto and deploy to GitHub Pages
     └── test-notebooks.yml        ← execute all solution notebooks with the real Cheetah
 ```
@@ -65,22 +65,14 @@ Notebook source format: `# %% [markdown]` / `# %%` cells; code between
 `### EXERCISE: ...` appear only in the exercise version. Markdown cells tagged
 `# %% [markdown] solution` appear only in the solutions.
 
-## First publication on GitHub
+## Publishing
 
-```bash
-cd Lectures_ML4Accelerators
-rm -rf _to_delete                                        # scratch folder, safe to delete
-mkdir -p .github/workflows && mv ci/workflows/*.yml .github/workflows/ && rmdir ci/workflows ci
-git init -b main
-git add . && git commit -m "ML for accelerator physics: lecture + exercises"
-git remote add origin git@github.com:hayg25/Lectures_ML4Accelerators.git
-git push -u origin main
-```
-
-Then on GitHub: create the (public) repository `hayg25/Lectures_ML4Accelerators` before
-pushing, and set **Settings → Pages → Source: GitHub Actions**. The site appears at
-https://hayg25.github.io/Lectures_ML4Accelerators/ and the Colab badges work as soon as the
-repository is public.
+Repository: https://github.com/hayg25/ML4Accelerators. GitHub Actions live in
+`.github/workflows/` (`publish.yml` renders the site and deploys it to GitHub Pages;
+`test-notebooks.yml` executes the solution notebooks with the real Cheetah).
+In the repository settings: **Settings → Pages → Source: GitHub Actions**.
+The site appears at https://hayg25.github.io/ML4Accelerators/ and the Colab badges work
+as long as the repository is public.
 
 ## License
 
