@@ -11,7 +11,8 @@ format:
 ## How to start
 
 1. Click on a **Open in Colab** badge below (a free Google account is needed).
-2. In Colab: *Runtime → Run all*. The first cell installs Cheetah (~30 s).
+2. In Colab: *Runtime → Run all*. In the accelerator track, the first cell installs Cheetah (~30 s);
+   the nuclear-energy track needs no installation.
 3. Fill in the cells marked **✏️ Exercise** (look for `...` and `# TODO`).
 4. Stuck? Open the solution notebook.
 
@@ -20,7 +21,7 @@ format:
 Colab notebooks opened from GitHub are temporary. Use *File → Save a copy in Drive* to keep your answers.
 :::
 
-## The notebooks
+## Accelerator track
 
 | # | Topic | You will learn | Exercise | Solution |
 |:-:|:--|:--|:-:|:-:|
@@ -31,6 +32,20 @@ Colab notebooks opened from GitHub are temporary. Use *File → Save a copy in D
 
 Suggested order: 0 → 1 → 2 → 3. Each notebook takes 30–45 min; notebook 0 is needed for
 the others only as an introduction to Cheetah (each notebook is self-contained).
+
+## Nuclear-energy track
+
+The same methods applied to reactor physics, radiation protection and dosimetry. Each notebook
+contains its own small physics simulator; see [ML for nuclear energy](nuclear.qmd) for the
+context and references.
+
+| # | Topic | You will learn | Exercise | Solution |
+|:-:|:--|:--|:-:|:-:|
+| 4 | Radionuclide identification in gamma spectra | simulated NaI spectra; ROI method vs. neural network vs. full-spectrum fit; counting statistics; gain drift and data augmentation; unknown nuclides | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/04_gamma_spectroscopy.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/solutions/04_gamma_spectroscopy.ipynb) |
+| 5 | Surrogate of a reactor-physics code | Latin-hypercube design; Gaussian process with uncertainty; critical boron search; uncertainty propagation; GP vs. neural network with 40 runs; active learning | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/05_reactor_surrogate.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/solutions/05_reactor_surrogate.ipynb) |
+| 6 | Neutron/gamma pulse-shape discrimination | pulse simulation; optimised charge comparison; neural network on waveforms; pile-up; gamma rejection at the operating point | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/06_neutron_gamma_psd.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/solutions/06_neutron_gamma_psd.ipynb) |
+
+Each nuclear notebook takes 45–60 min and can be done independently of the others.
 
 ## Run locally instead
 

@@ -36,9 +36,15 @@ quadrupoles, beam size). Nothing to install: the exercises run on Google Colab.
 
 ## Hands-on exercises
 
-Four notebooks, all built on the same three-quadrupole beamline simulated with
-[Cheetah](https://github.com/desy-ml/cheetah), a fast and differentiable beam-dynamics code
-written in PyTorch. See the [exercises page](exercises.qmd).
+**Accelerator track** — four notebooks, all built on the same three-quadrupole beamline
+simulated with [Cheetah](https://github.com/desy-ml/cheetah), a fast and differentiable
+beam-dynamics code written in PyTorch.
+
+**Nuclear-energy track** — three notebooks applying the same methods to radionuclide
+identification, a reactor-physics surrogate and neutron/gamma discrimination; see
+[ML for nuclear energy](nuclear.qmd).
+
+All on the [exercises page](exercises.qmd).
 
 ## Reuse
 

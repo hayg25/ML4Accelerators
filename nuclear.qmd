@@ -1,0 +1,107 @@
+---
+title: "Machine learning for nuclear energy"
+subtitle: "Where the methods of the lecture help — and three hands-on case studies"
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+---
+
+::: {.lead-box}
+The methods presented in the lecture — surrogate models, Bayesian optimisation, anomaly
+detection, classification, reinforcement learning — are not specific to accelerators. This page
+maps them onto problems of **reactor physics, plant operation, radiation protection, dosimetry
+and the fuel cycle**, and proposes three notebooks built on nuclear-energy problems.
+:::
+
+## The same toolbox, other problems
+
+| Domain | Typical problem | ML approach | Example in the literature | Notebook |
+|:--|:--|:--|:--|:-:|
+| **Reactor physics & core design** | neutronics / multiphysics codes too slow for optimisation, uncertainty and safety studies | **surrogate models** (Gaussian processes, neural networks); Bayesian optimisation; reinforcement learning for combinatorial design | RL optimisation of BWR fuel assemblies (Radaideh *et al.*, Nucl. Eng. Des. **372**, 110966, 2021) | [5](#reactor) |
+| **Plant operation & monitoring** | early detection of anomalies (vibrations, flow perturbations) in operating cores | **anomaly detection & classification** trained on simulated signals | neutron-noise core diagnostics, H2020 CORTEX project (Demazière *et al.*, PHYSOR 2020) | 3 (same idea on BPMs) |
+| **Radiation protection, decommissioning, waste** | identify radionuclides quickly with low-resolution field detectors | **supervised classification** on simulated spectra | Kamuda *et al.*, IEEE TNS **64**, 1858 (2017); Turner *et al.*, Sensors **21**, 5238 (2021) | [4](#gamma) |
+| **Dosimetry & neutron metrology** | separate neutrons from gammas; unfold neutron spectra from Bonner-sphere counts | **classification** of pulse shapes; **regression** (inverse problems) | Karmakar *et al.*, Pramana **97**, 157 (2023); Braga & Dias, NIM A **476**, 252 (2002) | [6](#psd) |
+| **Accelerators for nuclear applications** (accelerator-driven systems, neutron and isotope production) | beam tuning, reliability, fault prediction | **Bayesian optimisation, surrogates, anomaly detection** | see the lecture | 0–3 |
+| **Nuclear data & theory** | expensive models, sparse data, uncertainty | emulators, Bayesian inference | review: Boehnlein *et al.*, Rev. Mod. Phys. **94**, 031003 (2022) | — |
+
+::: {.callout-note}
+## A common pattern
+In most of these applications **labelled real data are rare** (accidents, faults and exotic
+sources do not happen on demand). The training data come from **simulation codes** — Serpent,
+OpenMC, MCNP, Geant4, plant simulators — and the ML model learns to invert or accelerate them.
+The quality of the simulation, and the gap between simulation and reality, then decide how
+well the model works in the field. All three notebooks below make this point explicitly.
+:::
+
+## Three hands-on case studies
+
+All three run on Google Colab with **nothing to install** (numpy, scipy, scikit-learn,
+matplotlib) and use small, transparent physics simulators written in the notebook itself.
+
+### 4 · Radionuclide identification in gamma spectra {#gamma}
+
+NaI(Tl) spectra of activation and fission products (Co-60, Co-58, Mn-54, Eu-152, Cs-137,
+Cs-134, I-131…) over natural background. Classical region-of-interest analysis vs. a
+**neural network** vs. a physics-based **full-spectrum fit**; counting statistics; **gain drift**
+and data augmentation; what happens with a nuclide outside the library.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/04_gamma_spectroscopy.ipynb)
+&nbsp; solution: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/solutions/04_gamma_spectroscopy.ipynb)
+
+### 5 · A surrogate model of a reactor-physics code {#reactor}
+
+A toy PWR pin-cell code (six-factor formula, Doppler, boron, moderator density) with Monte
+Carlo-like noise plays the role of an expensive transport code. Latin-hypercube design of 40
+runs, **Gaussian-process surrogate** with uncertainty, critical boron search, reactivity
+coefficients, **uncertainty propagation** with 10⁵ samples, GP vs. neural network with few
+data, active learning.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/05_reactor_surrogate.ipynb)
+&nbsp; solution: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/solutions/05_reactor_surrogate.ipynb)
+
+### 6 · Neutron/gamma pulse-shape discrimination {#psd}
+
+Photoelectron-level simulation of liquid-scintillator pulses. Optimised charge comparison vs. a
+**neural network** on raw waveforms; figure of merit; performance versus energy; **pile-up**;
+neutron efficiency at a fixed gamma-rejection level.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/06_neutron_gamma_psd.ipynb)
+&nbsp; solution: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/solutions/06_neutron_gamma_psd.ipynb)
+
+## What the three notebooks have in common
+
+The notebooks were designed to give an **honest** picture, not a sales pitch:
+
+- **ML is not automatically better.** A well-optimised physics-based method (full-spectrum fit,
+  tail-to-total ratio) is as good as a neural network when the physics model is exact and the
+  signal clean. Always compare with the *best* classical method.
+- **ML pays off when conditions vary or are hard to model**: detector drift, pile-up,
+  background changes — provided the training data contain them.
+- **With few, expensive data, prefer Gaussian processes** over neural networks: they need
+  tens of runs instead of thousands, and give error bars.
+- **A model knows only its training domain**: unknown nuclides, extrapolation, new operating
+  conditions require explicit checks.
+
+## Using the notebooks for group work
+
+Each notebook takes 45–60 min for a group of 3–4 people. Suggested discussion questions for
+the final presentation:
+
+1. In your own research, which quantity is expensive to compute or to measure, and what would a
+   surrogate or a classifier need as training data?
+2. Where would the training data come from (which code, which measurements), and how would you
+   check that the model still works on the real system?
+3. What would be the consequence of a wrong prediction, and how would you keep a human — or a
+   physics-based check — in the loop?
+
+## Further reading
+
+- A. Boehnlein *et al.*, *Colloquium: Machine learning in nuclear physics*, Rev. Mod. Phys. **94**, 031003 (2022).
+- M. I. Radaideh *et al.*, *Physics-informed reinforcement learning optimization of nuclear assembly design*, Nucl. Eng. Des. **372**, 110966 (2021).
+- C. Demazière *et al.*, *Neutron noise-based anomaly classification and localization using machine learning*, PHYSOR 2020.
+- M. Kamuda, J. Stinnett, C. J. Sullivan, *Automated isotope identification algorithm using artificial neural networks*, IEEE TNS **64**, 1858 (2017).
+- D. T. Phan *et al.*, *Comparative study of machine learning and statistical methods for automatic identification and quantification in γ-ray spectrometry*, arXiv:2508.08306 (2025).
+- A. Karmakar *et al.*, *Deep neural network-based pulse shape discrimination of neutrons and γ-rays in organic scintillation detectors*, Pramana **97**, 157 (2023).
+- C. C. Braga, M. S. Dias, *Application of neural networks for unfolding neutron spectra measured by means of Bonner spheres*, NIM A **476**, 252 (2002).

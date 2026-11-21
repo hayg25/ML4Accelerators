@@ -4,6 +4,7 @@ project:
   render:
     - index.qmd
     - exercises.qmd
+    - nuclear.qmd
     - slides/ml4acc.qmd
   resources:
     - notebooks/*.ipynb
@@ -24,6 +25,8 @@ website:
         text: Slides
       - href: exercises.qmd
         text: Exercises
+      - href: nuclear.qmd
+        text: ML for nuclear energy
     right:
       - icon: github
         href: https://github.com/hayg25/ML4Accelerators
