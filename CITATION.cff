@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use or adapt this material, please cite it as below."
+title: "Machine Learning for Accelerator Physics: a beginner's lecture with hands-on notebooks"
+type: software
+authors:
+  - family-names: Guler
+    given-names: Hayg
+    affiliation: "IJCLab (CNRS/IN2P3, Université Paris-Saclay)"
+repository-code: "https://github.com/hayg25/ML4Accelerators"
+url: "https://hayg25.github.io/ML4Accelerators/"
+license: MIT
+keywords:
+  - machine learning
+  - particle accelerators
+  - beam dynamics
+  - Bayesian optimisation
+  - neural networks
+  - reinforcement learning
+  - education
+  - Cheetah
