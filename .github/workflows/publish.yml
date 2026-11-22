@@ -19,8 +19,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the encryption library (for the locked nuclear page)
+        run: pip install cryptography
       - uses: quarto-dev/quarto-actions/setup@v2
       - name: Render website and slides
+        env:
+          # Repository secret (Settings → Secrets and variables → Actions).
+          # If it is not defined, the nuclear notebooks are simply left out of the page.
+          NUCLEAR_PASSWORD: ${{ secrets.NUCLEAR_PASSWORD }}
         run: quarto render
       - uses: actions/upload-pages-artifact@v3
         with:
