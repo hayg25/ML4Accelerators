@@ -19,7 +19,8 @@
   <b><a href="https://hayg25.github.io/ML4Accelerators/slides/ml4acc.html">Slides</a></b> ·
   <b><a href="https://hayg25.github.io/ML4Accelerators/">Website</a></b> ·
   <b><a href="#hands-on-notebooks">Notebooks</a></b> ·
-  <b><a href="https://hayg25.github.io/ML4Accelerators/nuclear.html">Nuclear track</a></b> ·
+  <b><a href="https://hayg25.github.io/ML4Accelerators/lecture-notes.html">Lecture notes</a></b> ·
+  <b><a href="https://hayg25.github.io/ML4Accelerators/resources.html">Learn more</a></b> ·
   <b><a href="notebooks/solutions/">Solutions</a></b> ·
   <b><a href="#citation">Cite</a></b>
 </p>
@@ -35,8 +36,10 @@ line simulated with the differentiable beam-dynamics code
 [Cheetah](https://github.com/desy-ml/cheetah): students first meet a neural network fitting
 the beam size versus one quadrupole strength, then use the very same beamline to build a
 surrogate model, run Bayesian optimisation and detect faulty beam position monitors.
-A second set of notebooks applies the same methods to **nuclear-energy** problems
-(radionuclide identification, reactor-physics surrogate, neutron/gamma discrimination).
+Written [lecture notes](https://hayg25.github.io/ML4Accelerators/lecture-notes.html) follow the
+slides one by one, with frequently asked questions and a self-check quiz, and a
+[Learn more](https://hayg25.github.io/ML4Accelerators/resources.html) page lists free courses,
+books and papers to go further.
 
 <p align="center">
   <a href="https://hayg25.github.io/ML4Accelerators/slides/ml4acc.html">
@@ -77,17 +80,11 @@ references are listed at the end of the slides.
 | 2 | **Bayesian optimisation** | Gaussian processes · expected improvement · coding the BO loop · comparison with random search · noise | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/02_bayesian_optimisation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/solutions/02_bayesian_optimisation.ipynb) |
 | 3 | **Faulty BPM detection** | unsupervised learning · PCA reconstruction error · Isolation Forest · precision vs. recall | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/03_anomaly_detection.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/solutions/03_anomaly_detection.ipynb) |
 
-### Nuclear-energy track
+### Nuclear-energy track 🔒
 
-The same methods applied to problems of reactor physics, radiation protection and dosimetry —
-each notebook contains its own small physics simulator, **nothing to install**. Context, typical
-applications and references: [ML for nuclear energy](https://hayg25.github.io/ML4Accelerators/nuclear.html).
-
-| # | Notebook | You will learn | Exercise | Solution |
-|:-:|:--|:--|:-:|:-:|
-| 4 | **Radionuclide identification** | simulated NaI spectra · ROI vs. neural network vs. full-spectrum fit · counting statistics · gain drift & augmentation · unknown nuclides | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/04_gamma_spectroscopy.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/solutions/04_gamma_spectroscopy.ipynb) |
-| 5 | **Reactor-physics surrogate** | Latin-hypercube design · Gaussian process with uncertainty · critical boron search · uncertainty propagation · GP vs. NN with 40 runs | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/05_reactor_surrogate.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/solutions/05_reactor_surrogate.ipynb) |
-| 6 | **Neutron/gamma PSD** | pulse simulation · optimised charge comparison vs. neural network · pile-up · gamma rejection at the operating point | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/06_neutron_gamma_psd.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/solutions/06_neutron_gamma_psd.ipynb) |
+A second set of three notebooks applies the same methods to reactor physics, radiation
+protection and dosimetry. It is unlocked during the workshop (password given in the session) on
+the [ML for nuclear energy](https://hayg25.github.io/ML4Accelerators/nuclear.html) page.
 
 Each notebook is self-contained (30–60 min). Cells marked ✏️ are left for the participants
 (`...` / `# TODO`); the solution notebooks are complete.
@@ -129,10 +126,14 @@ ML4Accelerators/
 ├── scripts/
 │   ├── build_notebooks.py       # src/*.py → exercise + solution notebooks
 │   ├── make_figures.py          # all slide figures (numpy / scikit-learn / matplotlib)
+│   ├── make_animations.py       # frame-by-frame figures of the animated slides
+│   ├── make_handout.py          # slides + speaker notes → lecture-notes.qmd
+│   ├── lock_pages.py            # encrypts the locked part of nuclear.html (post-render)
 │   └── optics.py                # minimal linear-optics model used for the figures
 ├── assets/                      # figures and README images
 ├── index.qmd, exercises.qmd,    # website pages
-│   nuclear.qmd
+│   nuclear.qmd, resources.qmd,
+│   lecture-notes.qmd (generated), _questions.qmd
 └── .github/workflows/           # publish website · execute notebooks with Cheetah
 ```
 
@@ -141,7 +142,12 @@ ML4Accelerators/
 - **Notebooks** are generated from `notebooks/src/*.py`. Code between `### BEGIN SOLUTION`
   and `### END SOLUTION` appears only in the solutions; lines `### EXERCISE: …` only in the
   exercise version. After editing a source, run `python scripts/build_notebooks.py`.
-- **Figures** are reproducible: `python scripts/make_figures.py` regenerates every slide figure.
+- **Figures** are reproducible: `python scripts/make_figures.py` and
+  `python scripts/make_animations.py` regenerate every slide figure and animation frame.
+- **Speaker notes** live in the slides (`::: notes`, press **S** during the talk);
+  `scripts/make_handout.py` turns them into the lecture notes (run automatically before each render).
+- **Locked nuclear track**: the hands-on part of `nuclear.html` is encrypted (AES-GCM) at render
+  time with the GitHub secret `NUCLEAR_PASSWORD`; without the secret the page stays locked.
 - **Continuous integration**: every push renders and deploys the website, and executes all
   solution notebooks with the current Cheetah release, so API changes are caught early.
 

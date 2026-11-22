@@ -40,9 +40,13 @@ quadrupoles, beam size). Nothing to install: the exercises run on Google Colab.
 simulated with [Cheetah](https://github.com/desy-ml/cheetah), a fast and differentiable
 beam-dynamics code written in PyTorch.
 
-**Nuclear-energy track** — three notebooks applying the same methods to radionuclide
-identification, a reactor-physics surrogate and neutron/gamma discrimination; see
-[ML for nuclear energy](nuclear.qmd).
+**Nuclear-energy track** 🔒 — three notebooks applying the same methods to radionuclide
+identification, a reactor-physics surrogate and neutron/gamma discrimination. They are unlocked
+with a password given during the workshop; see [ML for nuclear energy](nuclear.qmd).
+
+**Lecture notes** — the [slides explained in writing](lecture-notes.qmd), with frequently asked
+questions and a self-check quiz. **[Learn more](resources.qmd)** — free courses, books and papers
+to go further.
 
 All on the [exercises page](exercises.qmd).
 

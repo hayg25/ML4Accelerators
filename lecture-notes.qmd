@@ -1,0 +1,747 @@
+---
+title: "Lecture notes"
+subtitle: "Machine Learning for Accelerator Physics — the slides, explained"
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 2
+---
+
+::: {.callout-note}
+These notes follow the [slides](slides/ml4acc.html) one by one: each section shows the main
+figure of the slide and the explanation given orally. They are generated automatically from the
+speaker notes of the slides (`python scripts/make_handout.py`). At the end you will find
+[frequently asked questions](#frequently-asked-questions) and a [self-check quiz](#self-check-quiz).
+:::
+
+
+## Today's plan
+
+Welcome everyone. In the next hour I want to give you a map of how machine learning is used
+around particle accelerators — not a deep dive into any single method, but enough to know what
+each method is, what it needs, and when it is the right tool.
+
+The lecture has four parts. First, why accelerators are a good playground for machine learning.
+Second, machine learning from scratch: we will build the vocabulary slowly — model, loss,
+training — and open the "black box" of neural networks step by step. Third, a tour of five
+families of methods, each with a real example from an accelerator. And finally a few rules of
+good practice.
+
+One important choice: everything is explained with the same physical example, a small beamline
+with three quadrupoles and a screen. You will meet it again in all the exercises, which run in
+your browser, so you do not need to install anything.
+
+# Why machine learning for accelerators?
+
+## An accelerator is a function with many knobs
+
+![](assets/anim/beamline_1.svg){width="85%" fig-align="center"}
+
+Here is our running example. An electron beam enters on the left, goes through three
+quadrupoles — the grey bands — and hits a screen on the right. The blue curve is the horizontal
+beam size, the orange one the vertical.
+
+With all quadrupoles off, the beam simply diverges: it reaches more than 300 µm on the screen.
+With well-chosen strengths, the beam is focused: about 60 µm in total. Notice that a
+quadrupole always focuses in one plane and defocuses in the other — that is why we need several
+of them, with alternating signs.
+
+The key idea of this lecture: from the outside, an accelerator is a function. Inputs are
+the settings of the machine, outputs are the properties of the beam. Tuning means finding the
+inputs that give the outputs we want. With three knobs, an operator can do it by hand — you will
+do it in exercise 0. With three hundred, it becomes impossible, and that is where algorithms help.
+
+## What makes it hard?
+
+Why is this hard? Let me reveal six reasons one by one.
+
+The parameters are coupled: the best setting of one magnet depends on all the others, so
+you cannot optimise them one at a time.
+
+Diagnostics are noisy and incomplete. Some quantities, like the longitudinal phase
+space, can only be measured with destructive or slow devices.
+
+The machine drifts: temperature, ageing, hysteresis. The optimum found this morning may
+not hold tonight.
+
+Simulations that include collective effects — space charge, coherent synchrotron
+radiation, wakefields — can take minutes to hours per run.
+
+Beam time is expensive: every minute spent tuning is a minute taken from the users.
+
+And the last point is the good news: accelerators produce enormous amounts of data.
+Thousands of sensors are archived every second. Data plus hard problems — that is exactly
+where machine learning is useful.
+
+## Four families of tasks
+
+Almost every application of machine learning around an accelerator falls into one of four
+families.
+
+Tuning and optimisation: find the best settings with as few trials as possible.
+
+Modelling and prediction: build fast replacements of slow simulations, or predict
+quantities we cannot measure directly — so-called virtual diagnostics.
+
+Detection and diagnosis: spot faulty sensors, predict RF trips or beam losses.
+
+Control: keep the beam stable in real time against drifts.
+
+And one message I will repeat: machine learning does not replace beam physics. The best
+results always combine physics knowledge with learning from data. Keep these four families in
+mind: they are the map of the rest of the lecture. A good overview is the paper by Edelen et
+al., "Opportunities in machine learning for particle accelerators", 2018.
+
+# Machine learning from scratch
+
+## From writing rules to learning them
+
+What is machine learning, concretely? In the classical approach, a human writes the rules:
+a physics model, or simple thresholds such as "flag a beam position monitor if it reads more
+than 2 mm".
+
+In machine learning, we give the computer examples — or a goal — and it finds the rules
+itself. What it produces is called a model.
+
+A classic definition, paraphrasing Tom Mitchell: a program learns when its performance
+on a task, measured by some metric, improves with experience — that is, with data. Keep these
+three words in mind: task, metric, data. For every method in this lecture, ask yourself: what
+is the task, how is performance measured, and where do the data come from?
+
+Machine learning is useful when the rules are too complicated to write down, or simply unknown,
+but examples exist.
+
+## Three ways to learn
+
+There are three ways to learn.
+
+Supervised learning: we have examples with the right answer — pairs of inputs and
+outputs — and we learn the mapping. For instance magnet settings and the resulting beam size,
+or RF signals labelled with the type of fault that followed.
+
+Unsupervised learning: we only have data, no answers. The goal is to find structure:
+groups, patterns, or points that do not fit. Example: finding faulty beam position monitors in
+archived data, where nobody has labelled the faults.
+
+Reinforcement learning: an agent acts on a system, receives a reward, and improves its
+strategy by trial and error — like learning to focus the beam by moving magnets.
+
+We start with supervised learning because it contains all the key ideas; the other two
+reuse them.
+
+## Our running example: a dataset
+
+| sample | input $x$<br>$k_1$ of Q1 [1/m²] | target $y$<br>σx [µm] |
+|:-:|:-:|:-:|
+| 1 | −11.8 | 527 |
+| 2 | 2.2 | 104 |
+| 3 | 9.4 | 148 |
+| 4 | 21.1 | 513 |
+| … | … | … |
+| 25 | 24.4 | 615 |
+
+Let us make this concrete. We scan the strength of the first quadrupole and record the
+horizontal beam size on the screen: 25 measurements, with about 6 % noise.
+
+Some vocabulary. Each row is a sample. What we know — here the quadrupole strength —
+is the input, also called feature. What we want to predict — the beam size — is the target, or
+label. All the rows together form the dataset.
+
+The question of supervised learning: can the computer learn the relation between input
+and output from these 25 rows alone, without being told the formula of beam optics?
+
+Of course, here we know the physics: a few 2×2 matrices give the answer exactly. But
+on a real machine with hundreds of magnets, space charge and imperfections, nobody can write
+the formula — and the same recipe still works. Using a case where we know the answer lets us
+check that the method works.
+
+## The four ingredients of (almost) every ML method
+
+Almost every machine-learning method has four ingredients.
+
+Data: the samples. A model: a function with adjustable parameters, usually
+written theta. A straight line has two parameters, the slope and the offset. A loss: a
+single number that says how wrong the model is on the data. An optimiser: a procedure
+that changes the parameters to make the loss smaller.
+
+If you are a physicist, you already know this: it is fitting! A least-squares fit of a
+straight line is, strictly speaking, machine learning.
+
+So what is new? Two things: the models are much more flexible — thousands or millions of
+parameters instead of two — and the goal is not to describe the data we have, but to predict
+data we have not seen yet. Keep this in mind, we will come back to it with overfitting.
+
+You will find these four ingredients everywhere: in Bayesian optimisation the model is a
+Gaussian process; in reinforcement learning the model is the policy and the loss is minus the
+reward.
+
+## Measuring how wrong a model is: the loss
+
+![](assets/anim/loss_2.svg){width="85%" fig-align="center"}
+
+Here are our 25 measurements. What relation do you see? A V shape: the beam is smallest around
+k1 ≈ 5, where the quadrupole focuses the beam onto the screen.
+
+First model: a straight line. The orange segments are the residuals: the difference
+between each measurement and the model. To get a single number, we square them — so that
+positive and negative errors do not cancel, and big errors count a lot — and average them. This
+is the mean squared error: here about 36 000 µm², that is typical errors of about 190 µm. The
+best straight line is simply bad: the model is not flexible enough.
+
+Second model: a flexible curve — in fact a small neural network trained on the same 25
+points. The residuals almost vanish: 440 µm², about 20 µm typical error, which is the noise
+level of the data.
+
+So training means: find the parameters with the smallest loss. And to describe this
+V-shaped curve we need a flexible model. How do we find the parameters? That is the next slide.
+
+## Training = walking downhill on the loss
+
+![](assets/anim/gd1d_5.svg){width="85%" fig-align="center"}
+
+How do we find the parameters with the smallest loss? Imagine a hiker in the fog on a hill: they
+cannot see the valley, but they can feel the slope under their feet. The strategy: take a step
+downhill, feel the slope again, take another step.
+
+Here the grey curve is the loss as a function of one parameter, theta. We start at the dark
+dot. We compute the slope — the dashed blue tangent — and move theta by minus the learning
+rate times the slope. Since the slope is negative, we move to the right. Again: the slope
+is smaller, so the step is smaller. Again. After a few steps we are at the bottom,
+where the slope is zero.
+
+This is gradient descent: the same algorithm trains almost every neural network in the world.
+
+## The step size: the learning rate η
+
+![](assets/figs/gd_learning_rate.svg){width="85%" fig-align="center"}
+
+The step size, called the learning rate eta, matters a lot. Same loss, three learning rates.
+
+Too small, left: every step is tiny and we crawl towards the minimum. Reasonable,
+middle: we converge in a few steps. Too large, right: we overshoot and jump from one side
+of the valley to the other, further and further — the training diverges.
+
+When a training does not work, the learning rate is the first knob to try. Modern
+optimisers such as Adam adapt the step size automatically, but they still have a learning rate.
+
+## The same idea in two (or 10 000) dimensions
+
+![](assets/anim/gd2d_3.svg){width="85%" fig-align="center"}
+
+The same idea works in any number of dimensions. Here the landscape is the beam size on the
+screen as a function of two quadrupole strengths — Q2 horizontally, Q3 vertically. Yellow is
+small beam, dark is large beam. There are two valleys.
+
+We start from the white dot. After 5 steps, we are going down the slope. After
+20 steps, we enter a valley. After 150 steps, we sit at the bottom of the valley: the star.
+
+An important limitation: gradient descent is local. It finds the bottom of the valley it
+starts in — not necessarily the deepest one. Starting elsewhere, we could end in the other
+valley. You will see this in exercise 0.
+
+Training a neural network is exactly this, except that the parameters are thousands of
+weights instead of two quadrupole strengths, and the landscape is the loss.
+
+# Neural networks, step by step
+
+## Why do we need neural networks?
+
+Now let us open the black box of neural networks. Why do we need them at all?
+
+First, for a real machine we rarely know the formula: errors, collective effects and
+coupling make it impossible to write by hand.
+
+Second, classical flexible fits do not scale. A polynomial of one variable is easy;
+a polynomial of degree 3 in 100 variables has about 180 000 terms.
+
+Third, what we would like is a universal Lego: one simple building block that we can
+repeat and combine to approximate any smooth function.
+
+A neural network is exactly that: many copies of one very simple brick, the neuron,
+whose parameters are found by the gradient descent we just saw. There is nothing biological or
+magical about it: the name comes from a loose analogy with brain cells, proposed in 1943 by
+McCulloch and Pitts. It is just a big parametrised function.
+
+## The brick: one artificial neuron
+
+![](assets/figs/neuron.svg){width="85%" fig-align="center"}
+
+Here is the brick. A neuron takes some inputs — here our three quadrupole strengths — and does
+three things.
+
+It multiplies each input by a weight. The weight says how much this input matters, and
+with which sign. It adds everything up, plus a constant called the bias — an offset.
+And it passes the result through an activation function. The most common one is called
+ReLU: if the sum is positive, keep it; if negative, output zero.
+
+Let us do it by hand. Inputs 5, −13 and 12; weights 0.2, −0.1 and 0.05; bias 0.5. The
+weighted sum is 1 + 1.3 + 0.6 + 0.5 = 3.4. It is positive, so the output is 3.4.
+
+Another neuron, with other weights, gives −2.6 for the same input: negative, so the
+output is zero. We say this neuron is "off" for this input.
+
+The weights and the bias are the parameters that training adjusts. One neuron alone is a poor
+model — a straight line with a kink. The power comes from combining many of them.
+
+## Why an activation function?
+
+![](assets/figs/activations.svg){width="85%" fig-align="center"}
+
+Why do we need this activation function at all? Here are the three most common ones: ReLU, the
+sigmoid, and the hyperbolic tangent.
+
+Without activation, a neuron is just a weighted sum: a linear function. And a linear
+function of linear functions is still linear. No matter how many neurons you stack, the whole
+network would be a straight line — our bad model A.
+
+The activation adds a small non-linearity — a kink for ReLU, an S-shape for the others —
+and this is what allows the network to bend. ReLU is the most used today because it is simple
+and fast to compute. Let us see on the next slide how kinks build a curve.
+
+## Building a curve from neurons
+
+![](assets/anim/relu_6.svg){width="85%" fig-align="center"}
+
+This is the key slide to understand neural networks. We trained a small network — one hidden
+layer of six ReLU neurons — on the beam-size scan. Let us look inside.
+
+On the left, what one neuron contributes: a "hinge", flat on one side and a straight line on the
+other. The position of the kink is set by its bias, the steepness by its weights. On the right,
+the output of the network: the sum of the hinges, compared to the true curve in dashed grey.
+
+With one neuron we get the left arm of the V. A second hinge adds the right arm.
+A third one refines the slope. Four. And with six neurons, the sum follows the
+true curve closely.
+
+So a ReLU network is a piecewise-linear function whose pieces are learned. Training chooses
+where each hinge bends and how steep it is. More neurons give more hinges, and a finer
+approximation of any curve. With several inputs, each hinge becomes a fold in a
+higher-dimensional landscape, but the principle is the same.
+
+## From neurons to a network
+
+![](assets/figs/neural_network.svg){width="85%" fig-align="center"}
+
+Now we organise neurons in layers.
+
+The input layer is just the numbers we know: here three magnet strengths. The
+hidden layers are neurons fed by all the neurons of the previous layer. Each layer combines the
+features computed by the previous one: hinges of hinges. The output layer gives the
+predictions — here two beam sizes — usually without activation, so it can take any value.
+
+How many parameters does this have? In exercise 1 you will use 3 inputs, three hidden
+layers of 64 neurons, and 2 outputs. Each neuron has one weight per input plus one bias. That
+makes 8 706 parameters — all adjusted by gradient descent.
+
+When people say "deep learning", they simply mean networks with many hidden layers.
+
+## How a network learns
+
+How does a network learn? A loop of four steps.
+
+Forward pass: we feed the inputs of a batch of samples through the network and get
+predictions. Loss: we compare the predictions with the targets, for example with the mean
+squared error. Backward pass: we need the slope of the loss with respect to every single
+weight. The trick, called backpropagation, is the chain rule of calculus, applied layer by layer
+from the output back to the input. It gives all the derivatives at the cost of about one extra
+forward pass. Update: every weight takes a small step downhill.
+
+We repeat this loop. One pass over the whole dataset is called an epoch; training takes
+tens to thousands of epochs.
+
+Good news: you never write these derivatives yourself. Libraries like PyTorch compute them
+automatically — this is called automatic differentiation. In scikit-learn, which we use in the
+exercises, the whole loop is one line.
+
+## Watching a network learn
+
+![](assets/anim/train_4.svg){width="85%" fig-align="center"}
+
+Let us watch a network learn. Two hidden layers of 32 neurons, trained on 40 noisy measurements.
+On the left, the prediction; on the right, the loss versus the number of epochs, on log scales.
+
+After one epoch, the weights are still essentially random: the prediction is almost flat.
+After 5 epochs, it starts to tilt. After 15, it bends. After 60, the V
+shape appears, and the loss drops by more than an order of magnitude. After 3000 epochs,
+the network follows the data, and the loss has reached a plateau.
+
+Why a plateau? Because the measurements have about 6 % noise: the network cannot — and should
+not — do better than the noise. If the loss went much lower, it would mean the network is
+learning the noise itself. That is the subject of the next slide.
+
+## Generalisation: the danger of overfitting
+
+![](assets/anim/overfit_2.svg){width="85%" fig-align="center"}
+
+This is the most important danger in machine learning. Fifteen noisy points from a sine curve,
+the dashed line, and three models of increasing flexibility.
+
+A straight line: too rigid, it misses the trend. This is underfitting.
+
+A polynomial of degree 3: it captures the trend and ignores the noise. Good fit.
+
+A polynomial of degree 14: it passes through every single point, including the noise —
+its training error is zero! — and predicts complete nonsense in between. This is overfitting.
+
+The lesson: a model that is perfect on its training data tells you nothing about new
+data. A neural network with thousands of parameters and few data points can overfit exactly
+like this polynomial. The remedies: more data, a simpler model, regularisation, or stopping the
+training early.
+
+## Always keep a test set
+
+![](assets/figs/train_vs_test.svg){width="85%" fig-align="center"}
+
+How do we detect overfitting? This plot shows the same polynomials, degree 0 to 14. In blue,
+the error on the training data: it always decreases with flexibility. In red, the error on new
+data: it first decreases, then increases sharply. The sweet spot is in between.
+
+So the golden rule: before anything else, split your data. A training set to fit the
+model; a validation set to choose between models and settings; and a test set, kept aside, for
+the final honest score — used only once, at the very end.
+
+A warning specific to accelerators: consecutive shots are strongly correlated, and the
+machine drifts. If you split randomly, the test set will look very much like the training set
+and your score will be too optimistic. Test on data from another run, or another day.
+
+## Neural networks: strengths and limits
+
+To summarise this part.
+
+Strengths: neural networks can approximate almost any function, even with many inputs.
+Once trained, they are extremely fast — microseconds per prediction. And they handle images and
+time series naturally: camera images of the beam, RF waveforms.
+
+Limits: they need a lot of data. They interpolate well but extrapolate badly — and they
+do not warn you when you leave the domain they were trained on. They are hard to interpret, and
+by default they give no uncertainty.
+
+And a rule of thumb: always compare with a simple baseline — a linear fit, a lookup
+table, a threshold. If the neural network does not clearly beat it, it is not worth the
+complexity.
+
+# A tour of the methods
+
+## 1 · Surrogate models: the idea
+
+We now have all the vocabulary. Let us tour the methods, starting with surrogate models. The
+idea fits in one sentence: replace a slow simulation by a fast neural network trained to imitate
+it.
+
+First, generate data: run the expensive simulator for thousands of random settings — on
+a cluster, once. Then train a neural network to map settings to simulated outputs.
+Validate it on simulations it has never seen. And use it: millions of
+predictions per second, for scans, optimisation, uncertainty studies, or as an online model in
+the control room.
+
+The same idea with measured data gives a virtual diagnostic: predict a quantity that is
+destructive or slow to measure, from signals that are always available. You will build a
+surrogate of our beamline in exercise 1.
+
+## Surrogate models in practice
+
+![](assets/figs/surrogate_parity.svg){width="85%" fig-align="center"}
+
+This is how you judge a surrogate: a parity plot. Each point is one test setting, never seen in
+training. Horizontally the simulated beam size, vertically the prediction. Perfect predictions
+lie on the diagonal. This network was trained on 2400 simulations; note that it predicts the
+logarithm of the beam size, because beam sizes span three orders of magnitude — choosing a good
+representation of the data matters as much as the model.
+
+The pitfalls, which you will test yourself: too few training samples; settings outside
+the training range, where the network extrapolates silently; and the gap between simulation and
+the real machine.
+
+In the literature: a virtual diagnostic of the longitudinal phase space developed for
+LCLS and FACET-II, and surrogate models that made multi-objective optimisation of an injector
+orders of magnitude faster.
+
+## 2 · Bayesian optimisation: the setting
+
+Second method: Bayesian optimisation, now a standard tool in control rooms.
+
+The setting is tuning on the real machine. There is no formula, so no gradient.
+Every measurement is noisy. And every measurement costs beam time: we can afford
+ten to a hundred trials, not ten thousand.
+
+How would a careful operator proceed? They remember all the trials so far, build a
+mental picture of the landscape, and choose the next trial either where it looks good, or where
+they know too little to be sure.
+
+Bayesian optimisation formalises exactly this. A surrogate model that also gives an
+uncertainty — the Gaussian process — rebuilt after every measurement. A rule to choose the next
+trial, balancing "promising" and "unknown" — the acquisition function. Then measure, add the
+point, and repeat.
+
+## The Gaussian process: a fit that knows what it does not know
+
+![](assets/anim/gp_4.svg){width="85%" fig-align="center"}
+
+What is a Gaussian process? Think of it as a fit that knows what it does not know.
+
+Before any measurement, the GP considers many possible smooth curves — the thin coloured lines.
+Their average is the prediction, in thick blue; their spread, the shaded band, is the
+uncertainty. Here it is large everywhere: we know nothing yet.
+
+After one measurement, only curves passing through that point remain plausible. The
+uncertainty collapses near the point and stays large far away. After two
+measurements. After four, the shape of the function starts to be known between the
+points, and uncertain only where we have not measured.
+
+What defines "smooth"? The kernel. It encodes the prior belief that nearby settings give similar
+beams, with a length scale: how far apart two settings can be and still be similar. The length
+scale is learned from the data. This mean-plus-uncertainty is exactly what Bayesian
+optimisation needs.
+
+## Bayesian optimisation in action
+
+![](assets/anim/bo_7.svg){width="85%" fig-align="center"}
+
+Let us run Bayesian optimisation on our beamline: we tune Q1 to minimise the beam size, with
+the other quadrupoles fixed. The dashed grey line is the true function — unknown to the
+algorithm.
+
+We start with 3 random measurements. The GP prediction is in blue, with its uncertainty band.
+The orange area at the bottom is the expected improvement: how much we can hope to beat the
+best value so far by measuring at each point. It is large where the prediction is low —
+exploitation — or where the uncertainty is large — exploration. The next measurement is at the
+maximum, the orange line. Here it goes to the right, where we know nothing.
+
+4 measurements: nothing good on the right; the uncertainty there collapses.
+Now it explores near the current best. It finds the narrow valley.
+Now the best value is 62 µm, close to the true minimum. After 10 measurements,
+the minimum is well known, and the expected improvement is small everywhere: it starts to
+explore far away, just in case.
+
+Ten measurements to find the minimum of a noisy function, without gradients. This is why BO is
+popular for online tuning: for example at LCLS, to maximise the free-electron-laser pulse
+energy. Use it when evaluations are expensive and noisy, with up to about twenty knobs. In
+practice, use a library such as Xopt. You will code this loop yourself in exercise 2.
+
+## 3 · Anomaly detection: learn what "normal" looks like
+
+![](assets/anim/pca_2.svg){width="85%" fig-align="center"}
+
+Third method: anomaly detection. Here is the problem: beam position monitors sometimes misbehave
+— an offset, a dead channel, extra noise — and nobody labels these faults in the archived data.
+
+Each grey point is one shot, the readings of two neighbouring BPMs. Since both see the same
+orbit jitter, their readings are strongly correlated: normal shots lie close to a line.
+
+Principal component analysis finds this line from the data alone, without any optics
+model. In general, it finds the few directions in which the data vary most.
+
+Now a faulty shot, in red. Its readings are not particularly large — each one alone is
+within the normal range. But the pair is inconsistent: it is far from the line. The distance to
+the line, called the reconstruction error, is our anomaly score.
+
+No labels were needed: this is unsupervised learning. With ten BPMs and two steering
+magnets, normal orbits live on a two-dimensional plane in a ten-dimensional space, and PCA
+finds this plane. That is exactly exercise 3.
+
+## Another detector: the Isolation Forest
+
+![](assets/figs/isolation_forest.svg){width="85%" fig-align="center"}
+
+A second detector, the Isolation Forest, is based on a simple idea. Take the data and cut it
+with random vertical or horizontal lines, until the point you are interested in is alone in its
+box.
+
+On the left, an anomaly far from the cloud: it is isolated after about four random cuts on
+average. On the right, a normal point in the middle of the cloud: it takes about twelve cuts.
+
+Anomalies are "few and different", so they are isolated quickly. We repeat this with many
+random trees — hence "forest" — and the average number of cuts gives the anomaly score. Unlike
+PCA, it makes no assumption of linearity. It has been used, for example, to detect faulty BPMs
+at the LHC.
+
+## Anomaly detection & fault classification in practice
+
+![](assets/figs/anomaly_detection.svg){width="85%" fig-align="center"}
+
+On the left, one faulty shot, in red, hidden among 40 normal orbits along ten BPMs. By eye, it
+is almost impossible to see. On the right, the PCA anomaly score of 1500 shots: the faulty ones,
+in red, clearly separate from the normal ones.
+
+Without labels, this is the unsupervised approach, used for example at the LHC with an
+Isolation Forest.
+
+When experts have labelled past events, we can go further with supervised
+classification: for example, at CEBAF, the type of superconducting cavity fault is identified
+automatically from the RF waveforms recorded at the trip.
+
+## 4 · Reinforcement learning: the vocabulary
+
+![](assets/figs/rl_loop.svg){width="85%" fig-align="center"}
+
+Fourth method: reinforcement learning, the most ambitious one. An agent interacts with an
+environment — here the accelerator, or a simulation of it — in a loop.
+
+Let me define the vocabulary with the example of focusing the beam on a screen.
+The observation: what the agent sees, for example the beam image and the current magnet
+settings. The action: what it can do, here change the magnet strengths a little.
+The reward: a number that says how good the result is, for example minus the beam size.
+The policy: the strategy of the agent, a function from observation to action, usually a
+neural network. And an episode: one attempt, from a random starting point until the
+beam is focused or the time is up.
+
+The big difference with supervised learning: nobody tells the agent what the right action is.
+It only receives a reward after acting, and must discover good actions by itself.
+
+## Reinforcement learning: how the agent learns
+
+How does the agent learn? It starts with a random policy: its actions are nonsense.
+It plays many episodes and records what it saw, what it did, and what reward it got.
+Then the policy network is adjusted so that actions that led to a high total reward
+become more likely. And we repeat — typically tens of thousands to millions of episodes.
+
+Where do we find a million episodes? Certainly not on the real machine! The agent is
+trained in a fast simulator — this is one reason why codes like Cheetah were developed — with
+randomised errors so that it becomes robust, and then deployed on the machine. This is called
+sim-to-real transfer.
+
+Strengths: once trained, the agent acts in a few steps and can react to changing
+conditions. Costs: long training, careful design of the reward, and the gap between
+simulation and reality. At DESY, both approaches were compared on the same real tuning
+task: the RL agent was faster once trained, while Bayesian optimisation worked out of the box
+without any training. Earlier, at CERN, sample-efficient RL was demonstrated for trajectory
+steering at AWAKE.
+
+## 5 · Differentiable simulations
+
+Fifth and last family: differentiable simulations — where machine learning tools come back to
+help physics.
+
+A beamline is a chain of elements, so the beam at the screen is a composition of functions:
+the drift applied to the quadrupole applied to the drift, and so on. The chain rule gives the
+derivative of the beam size with respect to any magnet strength by multiplying the derivatives
+of each element — exactly like backpropagation in a neural network.
+
+If the simulator is written in an ML framework like PyTorch, these derivatives are
+computed automatically. This is what Cheetah does.
+
+What do gradients give you? Tuning many magnets at once by gradient descent; fitting a
+model of the machine to measurements; training RL agents and neural network components much
+faster.
+
+A related trend is physics-informed machine learning: putting physics into the model —
+conservation laws, symplectic structure — so that it needs less data and extrapolates better.
+The future is hybrid models: physics where we know it, learning where we don't.
+
+In code, three lines: declare k1 as trainable, simulate, and call backward. You will do
+this in exercise 0.
+
+## Which method when?
+
+| Method | Learns from | Needs | Typical use | Exercise |
+|:--|:--|:--|:--|:--:|
+| **Neural-net surrogate** | (input, output) examples | 10³–10⁶ samples, mostly simulation | fast models, virtual diagnostics | 1 |
+| **Gaussian process / BO** | each new measurement | 10–100 evaluations, ≲ 20 knobs | online tuning, noisy & expensive | 2 |
+| **PCA / Isolation Forest** | unlabelled data | "mostly normal" data | faulty sensors, unusual states | 3 |
+| **Classifier** (random forest, NN) | labelled events | expert labels | fault type identification | — |
+| **Reinforcement learning** | interaction & reward | 10⁴–10⁶ episodes (simulator) | fast tuning, feedback control | — |
+| **Differentiable simulation** | physics model + gradients | a differentiable model | many-knob tuning, model calibration | 0 |
+
+Here is the summary of the tour, as a decision table. The key column is "Needs": the right
+method depends first on how much data you can get and how expensive each data point is.
+
+Thousands of cheap simulations: a neural-network surrogate. Ten to a hundred expensive, noisy
+measurements: Gaussian processes and Bayesian optimisation. Archived data without labels:
+PCA or Isolation Forest. Labelled events: a classifier. A fast simulator and the need for
+real-time control: reinforcement learning. A differentiable model of the machine: gradients.
+
+And always the same rule of thumb: start with the simplest method that could work. It
+is your baseline, and an ML method must beat it to be worth deploying.
+
+# Good practice
+
+## What goes wrong in practice
+
+Most machine-learning projects that fail do not fail because of the algorithm. They fail on
+data, evaluation, or deployment. Four rules.
+
+Look at the data first: units, ranges, missing values, saturated sensors, timestamps.
+And choose a good representation — remember the logarithm of the beam size.
+
+Evaluate honestly: a separate test set, ideally from another run or another day, and
+always a comparison with a simple baseline.
+
+Know what the model does not know: its training domain, the risk of extrapolation, and
+its uncertainty. Gaussian processes and ensembles of networks give uncertainties. When the
+machine drifts, retrain.
+
+And safety: in a control room, an algorithm acts on real hardware. Hard limits on
+actuators, slow ramps, an operator in the loop, and a button to go back to the previous settings.
+
+The toolbox: scikit-learn for classical ML, PyTorch for neural networks, Cheetah for
+differentiable beam dynamics, Xopt or BoTorch for Bayesian optimisation, Gymnasium and
+Stable-Baselines3 for reinforcement learning.
+
+## Take-home messages
+
+Three messages to take home.
+
+One: machine learning is fitting flexible models to data — data, model, loss, optimiser.
+A neural network is nothing more than a sum of many simple hinges whose shape is learned by
+gradient descent.
+
+Two: choose the method from the task and from the data you have — surrogate, Bayesian
+optimisation, anomaly detection, reinforcement learning, or differentiable simulation.
+
+Three: physics plus machine learning beats either alone. Start simple, keep a test set,
+and know the limits of your model.
+
+## Your turn: the exercises
+
+| # | Notebook | Method | |
+|:-:|:--|:--|:--:|
+| 0 | First beamline with Cheetah | tracking, manual & gradient-based tuning | [![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/00_cheetah_basics.ipynb) |
+| 1 | Neural-network surrogate | supervised regression | [![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/01_surrogate_model.ipynb) |
+| 2 | Bayesian optimisation | GP + acquisition function | [![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/02_bayesian_optimisation.ipynb) |
+| 3 | Faulty BPM detection | unsupervised anomaly detection | [![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hayg25/ML4Accelerators/blob/main/notebooks/03_anomaly_detection.ipynb) |
+
+Now it is your turn. Four notebooks, all on the same beamline, all running in your browser on
+Google Colab. Exercise 0 is an introduction to Cheetah and to gradient-based tuning; exercise 1
+builds a neural-network surrogate; exercise 2 codes Bayesian optimisation; exercise 3 detects
+faulty BPMs.
+
+The cells marked with a pencil are for you; solutions are available on the website,
+together with written lecture notes that follow these slides. And a second set of exercises,
+applying the same methods to nuclear-energy problems — gamma spectroscopy, a reactor-physics
+surrogate, neutron/gamma discrimination — will be unlocked later in the workshop.
+
+## To go further
+
+If you want to go further, here are a few starting points. To start: the 3Blue1Brown videos on
+neural networks are the best visual introduction I know; the free scikit-learn MOOC from Inria
+is excellent for hands-on classical machine learning; Google's crash course is short and
+practical.
+
+To go deeper: the free book "Dive into Deep Learning", with code; the interactive Distill
+article on Gaussian processes; and Roman Garnett's book on Bayesian optimisation, also free.
+
+For accelerators: Cheetah and Xopt, the reinforcement-learning tutorial of the RL4AA community
+on the ARES accelerator, and two reviews. The complete list, with all the papers cited today, is
+on the course website.
+
+## Backup — glossary
+
+| Term | Meaning |
+|:--|:--|
+| **Sample / input / target** | one example; the quantity we know; the quantity to predict |
+| **Model, parameters** | function with adjustable numbers (weights) mapping inputs to outputs |
+| **Loss** | number measuring how wrong the model is; training minimises it |
+| **Gradient descent, learning rate** | walk downhill on the loss; size of each step |
+| **Neuron, activation** | weighted sum + bias, followed by a non-linear function (ReLU…) |
+| **Backpropagation** | chain rule computing the gradient of the loss for every weight |
+| **Epoch** | one pass over the whole training set |
+| **Overfitting** | model learns the noise of the training data; poor on new data |
+| **Gaussian process, kernel** | regression giving a mean and an uncertainty; kernel = notion of similarity |
+| **Acquisition function** | rule deciding where Bayesian optimisation measures next |
+| **PCA** | finds the few directions in which the data vary most |
+| **Policy, reward, episode** | RL: strategy observation → action; score of an action; one attempt |
+| **Differentiable simulation** | simulator that also returns gradients of its outputs |
+
+{{< include _questions.qmd >}}

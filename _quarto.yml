@@ -1,14 +1,26 @@
 project:
   type: website
   output-dir: _site
+  pre-render: scripts/make_handout.py
+  post-render: scripts/lock_pages.py
   render:
     - index.qmd
     - exercises.qmd
+    - lecture-notes.qmd
+    - resources.qmd
     - nuclear.qmd
     - slides/ml4acc.qmd
   resources:
-    - notebooks/*.ipynb
-    - notebooks/solutions/*.ipynb
+    # only the accelerator notebooks are copied to the website; the nuclear ones are
+    # opened from GitHub through the (locked) nuclear page
+    - notebooks/00_*.ipynb
+    - notebooks/01_*.ipynb
+    - notebooks/02_*.ipynb
+    - notebooks/03_*.ipynb
+    - notebooks/solutions/00_*.ipynb
+    - notebooks/solutions/01_*.ipynb
+    - notebooks/solutions/02_*.ipynb
+    - notebooks/solutions/03_*.ipynb
     - assets/
 
 website:
@@ -23,10 +35,14 @@ website:
         text: Course
       - href: slides/ml4acc.qmd
         text: Slides
+      - href: lecture-notes.qmd
+        text: Lecture notes
       - href: exercises.qmd
         text: Exercises
+      - href: resources.qmd
+        text: Learn more
       - href: nuclear.qmd
-        text: ML for nuclear energy
+        text: "ML for nuclear energy 🔒"
     right:
       - icon: github
         href: https://github.com/hayg25/ML4Accelerators

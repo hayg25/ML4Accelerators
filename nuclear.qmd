@@ -5,7 +5,8 @@ format:
   html:
     theme: cosmo
     css: styles.css
-    toc: true
+    toc: false
+search: false
 ---
 
 ::: {.lead-box}
@@ -34,6 +35,8 @@ OpenMC, MCNP, Geant4, plant simulators — and the ML model learns to invert or 
 The quality of the simulation, and the gap between simulation and reality, then decide how
 well the model works in the field. All three notebooks below make this point explicitly.
 :::
+
+::: {#locked-content}
 
 ## Three hands-on case studies
 
@@ -95,6 +98,7 @@ the final presentation:
    check that the model still works on the real system?
 3. What would be the consequence of a wrong prediction, and how would you keep a human — or a
    physics-based check — in the loop?
+:::
 
 ## Further reading
 

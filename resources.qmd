@@ -1,0 +1,89 @@
+---
+title: "Learn more"
+subtitle: "Free online courses, books, tools and papers to go further"
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+---
+
+All resources below are **free** (some books also exist in print). They are ordered from the
+easiest to the most advanced inside each section. A suggested path for a beginner is at the end.
+
+## Start here: understand neural networks and machine learning
+
+| Resource | Format | Why |
+|:--|:--|:--|
+| [3Blue1Brown — *Neural networks*](https://www.3blue1brown.com/topics/neural-networks) | videos | The best visual intuition for neurons, gradient descent and backpropagation. |
+| [Google — *Machine Learning Crash Course*](https://developers.google.com/machine-learning/crash-course) | short lessons, interactive visualisations, Colab exercises | Loss, gradient descent, overfitting, data preparation — in ~15 h. |
+| [Inria — *Machine learning in Python with scikit-learn*](https://www.fun-mooc.fr/en/courses/machine-learning-python-scikit-learn/) ([material online](https://inria.github.io/scikit-learn-mooc/)) | MOOC with notebooks | The library used in our exercises, taught by its developers. Excellent on evaluation and good practice. |
+| [scikit-learn user guide](https://scikit-learn.org/stable/user_guide.html) | documentation | Clear explanations and examples for every classical method (PCA, Isolation Forest, GPs…). |
+
+## Go deeper: deep learning
+
+| Resource | Format | Why |
+|:--|:--|:--|
+| [*Dive into Deep Learning*](https://d2l.ai) — Zhang, Lipton, Li, Smola | free book with runnable code (PyTorch, JAX…) | From linear regression to modern architectures, every chapter is a notebook. |
+| [PyTorch tutorials](https://pytorch.org/tutorials/) | tutorials | The framework behind Cheetah; start with *Learn the Basics*. |
+
+## Gaussian processes & Bayesian optimisation
+
+| Resource | Format | Why |
+|:--|:--|:--|
+| [*A Visual Exploration of Gaussian Processes*](https://distill.pub/2019/visual-exploration-gaussian-processes/) (Distill) | interactive article | Play with kernels and length scales in the browser. |
+| [Rasmussen & Williams — *Gaussian Processes for Machine Learning*](https://gaussianprocess.org/gpml/) | free book | The reference on GPs (chapter 2 is enough to start). |
+| [Garnett — *Bayesian Optimization*](https://bayesoptbook.com) | free book | Acquisition functions, practical BO, from the basics. |
+
+## Reinforcement learning
+
+| Resource | Format | Why |
+|:--|:--|:--|
+| [Hugging Face — *Deep RL Course*](https://huggingface.co/learn/deep-rl-course/unit0/introduction) | course with hands-on notebooks | Beginner-friendly, uses Stable-Baselines3 and Gymnasium. |
+| [OpenAI — *Spinning Up in Deep RL*](https://spinningup.openai.com) | tutorial + key papers | Compact introduction to the main algorithms (PPO, SAC…). |
+| [Sutton & Barto — *Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book-2nd.html) | free book | The reference textbook. |
+
+## Machine learning for accelerators
+
+| Resource | Format | Why |
+|:--|:--|:--|
+| [RL4AA — *Applying RL to particle accelerators: an introduction*](https://rl4aa.github.io/rl-tutorial-ares-basic/slides.html) | tutorial (ARES, DESY) | Hands-on RL on a real-machine model, with Cheetah. More on the [RL4AA community site](https://rl4aa.github.io/). |
+| [USPAS — *Optimization and Machine Learning for Accelerators*](https://slaclab.github.io/USPAS_ML/) | full course: slides + [lab notebooks](https://github.com/uspas/optimization_and_ml) | A one-week graduate course (SLAC, LBNL): optimisation, GPs, BO, neural nets, UQ, unsupervised learning, RL. |
+| [KIT — *machine-learning-tutorial*](https://github.com/machine-learning-tutorial) (A. Santamaria Garcia) | notebooks | Tutorials on BO and RL written for accelerator physicists with no ML background. |
+| [Cheetah documentation](https://cheetah-accelerator.readthedocs.io/) · [GitHub](https://github.com/desy-ml/cheetah) · [demos](https://github.com/desy-ml/cheetah-demos) | docs & examples | Tracking, gradient-based tuning, system identification. |
+| [Xopt](https://github.com/xopt-org/Xopt) | library | Bayesian optimisation and other optimisers used in control rooms. |
+
+### Review papers
+
+- A. Edelen *et al.*, *Opportunities in machine learning for particle accelerators*,
+  [arXiv:1811.03172](https://arxiv.org/abs/1811.03172) (2018) — the overview that started many projects.
+- R. Roussel *et al.*, *Bayesian optimization algorithms for accelerator physics*,
+  PRAB **27**, 084801 (2024), [doi:10.1103/PhysRevAccelBeams.27.084801](https://doi.org/10.1103/PhysRevAccelBeams.27.084801).
+- J. Kaiser *et al.*, *Bridging the gap between machine learning and particle accelerator physics
+  with high-speed, differentiable simulations* (Cheetah), PRAB **27**, 054601 (2024),
+  [arXiv:2401.05815](https://arxiv.org/abs/2401.05815).
+
+### Papers cited in the lecture
+
+- C. Emma *et al.*, *Machine learning-based longitudinal phase space prediction of particle
+  accelerators*, PRAB **21**, 112802 (2018).
+- A. Edelen *et al.*, *Machine learning for orders of magnitude speedup in multiobjective
+  optimization of particle accelerator systems*, PRAB **23**, 044601 (2020).
+- J. Duris *et al.*, *Bayesian optimization of a free-electron laser*, PRL **124**, 124801 (2020).
+- E. Fol *et al.*, *Detection of faulty beam position monitors using unsupervised learning*,
+  PRAB **23**, 102805 (2020).
+- C. Tennant *et al.*, *Superconducting radio-frequency cavity fault classification using machine
+  learning at Jefferson Laboratory*, PRAB **23**, 114601 (2020).
+- V. Kain *et al.*, *Sample-efficient reinforcement learning for CERN accelerator control*,
+  PRAB **23**, 124801 (2020).
+- J. Kaiser *et al.*, *Reinforcement learning-trained optimisers and Bayesian optimisation for
+  online particle accelerator tuning*, Sci. Rep. **14**, 15733 (2024).
+
+## A suggested path for a beginner
+
+1. Watch the 3Blue1Brown videos (≈ 1 h) and re-read the [lecture notes](lecture-notes.qmd).
+2. Do the [exercises](exercises.qmd) of this course.
+3. Follow the Inria scikit-learn MOOC (or Google's crash course) for solid foundations.
+4. Pick your topic: the USPAS course for optimisation and BO, the RL4AA tutorial and the
+   Hugging Face course for RL, *Dive into Deep Learning* for neural networks.
+5. Read the review papers above, then the papers closest to your machine.

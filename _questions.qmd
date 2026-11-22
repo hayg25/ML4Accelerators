@@ -1,0 +1,182 @@
+# Frequently asked questions
+
+Questions that often come up after this lecture, with short answers. Click to open.
+
+::: {.callout-tip collapse="true"}
+## How much data do I need to train a neural network?
+
+It depends on the number of inputs and on how complicated the function is, but as an order of
+magnitude: hundreds of samples for a smooth function of 2–3 inputs, thousands to hundreds of
+thousands for tens of inputs or images. The honest way to know is a **learning curve**: train on
+10 %, 30 %, 100 % of your data and look at the test error. If it still decreases, more data will
+help. In exercise 1 you will see the surrogate degrade with 50 samples instead of 2400.
+If you have only 10–100 points, prefer a Gaussian process or a physics model with a few fitted
+parameters.
+:::
+
+::: {.callout-tip collapse="true"}
+## Why not simply use the physics simulation directly?
+
+You should, whenever it is fast enough and accurate enough! ML is useful when (a) the simulation
+is too slow for the task (an optimisation needing 10⁵ evaluations, an online model at 10 Hz),
+or (b) the simulation does not match the real machine and data must fill the gap. A good
+surrogate is always validated *against* the simulation.
+:::
+
+::: {.callout-tip collapse="true"}
+## How do I choose the number of layers and neurons?
+
+There is no formula. Start small (2–3 hidden layers of 32–64 neurons), check training and
+validation errors, and increase the size only if the model underfits (both errors high). If it
+overfits (validation error much higher than training error), get more data, reduce the size or
+add regularisation. These choices are called **hyper-parameters** and are tuned on the
+validation set — never on the test set.
+:::
+
+::: {.callout-tip collapse="true"}
+## Is the gradient descent guaranteed to find the best solution?
+
+No. It finds a *local* minimum, the bottom of the valley where it starts (slide "the same idea in
+two dimensions"). For neural networks this is surprisingly not a big problem in practice: with
+many parameters, most local minima are about as good as each other. For tuning a machine it can
+be: restart from several points, or use a global method such as Bayesian optimisation.
+:::
+
+::: {.callout-tip collapse="true"}
+## What is the difference between a Gaussian process and a neural network?
+
+Both are flexible regression models. A **Gaussian process** gives a prediction *and* an
+uncertainty, works very well with few data (10–1000 points) and few inputs (≲ 20), but its cost
+grows like $N^3$ with the number of points. A **neural network** gives no uncertainty by default,
+needs more data, but scales to millions of points, many inputs and images, and is very fast once
+trained. Rule of thumb: few expensive points → GP; many cheap points → NN.
+:::
+
+::: {.callout-tip collapse="true"}
+## Why "Bayesian" optimisation?
+
+Because the Gaussian process is a Bayesian model: it starts from a *prior* belief on the function
+(smooth, with a certain length scale) and updates it into a *posterior* after each measurement
+using Bayes' rule. The uncertainty band you see is the spread of this posterior.
+:::
+
+::: {.callout-tip collapse="true"}
+## Can we trust an ML model in the control room?
+
+Only within limits you control. Good practice: the model acts through the usual control system,
+actuator changes are bounded and ramped, an operator can stop it, and the previous settings can
+be restored in one click. Monitor the model's inputs: if they leave the training range, the
+predictions are not reliable. Methods that give uncertainties (GPs, ensembles of networks) help
+detect this.
+:::
+
+::: {.callout-tip collapse="true"}
+## Reinforcement learning or Bayesian optimisation?
+
+Bayesian optimisation needs no training and works out of the box, but each tuning takes tens of
+evaluations and it does not "remember" between runs. A reinforcement-learning agent needs a long
+training (in simulation) but then tunes in a few steps and can act as a feedback. At ARES (DESY)
+both were compared on the same task (Kaiser *et al.*, Sci. Rep. 2024). Start with BO; consider
+RL when the same task is repeated very often and a good simulator exists.
+:::
+
+::: {.callout-tip collapse="true"}
+## What is the advantage of a differentiable simulation like Cheetah?
+
+It gives the derivative of any output with respect to any input in one extra pass, with no
+finite differences. With 100 magnets, finite differences need 100+ simulations per gradient;
+automatic differentiation needs about 2. This makes gradient-based tuning, model calibration
+and the training of neural networks or RL agents coupled to the simulator much faster. Cheetah
+is also fast in itself, which is why it is used to train RL agents.
+:::
+
+::: {.callout-tip collapse="true"}
+## Do I need a GPU?
+
+Not for this course nor for most accelerator applications with tabular data: everything in the
+exercises runs on a laptop CPU in seconds to minutes. GPUs matter for large networks, images and
+large-scale RL training. Google Colab offers a free GPU if you need one.
+:::
+
+::: {.callout-tip collapse="true"}
+## Where is ML used today in accelerator operation?
+
+Bayesian optimisation is used routinely for tuning at several facilities (e.g. FEL pulse energy
+at LCLS, injector tuning at many labs, often via Xopt). Anomaly detection of BPMs has been used at
+the LHC, fault classification of SRF cavities at CEBAF, virtual diagnostics at LCLS/FACET-II, and
+RL has been demonstrated on real machines at CERN (AWAKE, LINAC4) and DESY (ARES). The references
+are on the [resources page](resources.qmd).
+:::
+
+# Self-check quiz
+
+Try to answer before opening the solution.
+
+::: {.callout-note collapse="true"}
+## 1. What are the four ingredients of (almost) every ML method?
+
+Data, a model with adjustable parameters, a loss measuring how wrong the model is, and an
+optimiser that changes the parameters to reduce the loss.
+:::
+
+::: {.callout-note collapse="true"}
+## 2. The training loss diverges (grows to huge values) after a few steps. What is the first thing to try?
+
+Reduce the learning rate: the steps overshoot the minimum.
+:::
+
+::: {.callout-note collapse="true"}
+## 3. A neuron has weights $w = (1, -2)$, bias $b = 0.5$ and ReLU activation. What is its output for the input $(2, 1)$? And for $(0, 1)$?
+
+$z = 1\cdot2 - 2\cdot1 + 0.5 = 0.5$ → output $0.5$.
+For $(0, 1)$: $z = -2 + 0.5 = -1.5$ → output $0$ (the neuron is "off").
+:::
+
+::: {.callout-note collapse="true"}
+## 4. How many parameters (weights + biases) has a network 2 → 10 → 1?
+
+Hidden layer: $2 \times 10 + 10 = 30$. Output: $10 \times 1 + 1 = 11$. Total **41**.
+:::
+
+::: {.callout-note collapse="true"}
+## 5. Why is a randomly split test set often too optimistic on accelerator data?
+
+Consecutive shots are correlated and the machine drifts, so randomly chosen test samples are
+almost copies of training samples. Test on data from another run or another day.
+:::
+
+::: {.callout-note collapse="true"}
+## 6. In Bayesian optimisation, why is the next point sometimes chosen far from the current best?
+
+Because the acquisition function also rewards *uncertainty* (exploration): a region with no
+measurements might hide a better optimum.
+:::
+
+::: {.callout-note collapse="true"}
+## 7. You have 10 years of archived BPM data and nobody has labelled the faults. Which family of methods?
+
+Unsupervised anomaly detection (PCA reconstruction error, Isolation Forest, autoencoders).
+:::
+
+::: {.callout-note collapse="true"}
+## 8. Why does a reinforcement-learning agent usually train in simulation first?
+
+It needs $10^4$–$10^6$ episodes, far too many for beam time; and random actions at the start could
+be unsafe on a real machine. It is then transferred to the machine (sim-to-real).
+:::
+
+::: {.callout-note collapse="true"}
+## 9. A surrogate is very accurate on the test set but wrong on the machine. Name two possible reasons.
+
+(a) The machine settings are outside the training range (extrapolation). (b) The simulation used
+for training does not describe the machine (magnet errors, misalignments, drifts). Also possible:
+different units or calibrations between simulation and control system.
+:::
+
+::: {.callout-note collapse="true"}
+## 10. What does `loss.backward()` compute in Cheetah/PyTorch?
+
+The derivatives of the loss with respect to every trainable parameter (e.g. the quadrupole
+strengths declared as `nn.Parameter`), by automatic differentiation — the chain rule applied
+through the whole beamline.
+:::
